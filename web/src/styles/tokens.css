@@ -1,0 +1,99 @@
+/**
+ * Primitives. Raw values only — no component ever references these directly,
+ * it references the semantic aliases in theme.css. That indirection is what
+ * lets dark mode swap meanings without touching a single component.
+ */
+
+:root {
+  /* Green ramp. Anchored on the deep forest primary and the signal accent. */
+  --green-50: #f2f7f4;
+  --green-100: #e3efe8;
+  --green-200: #c4dfd0;
+  --green-300: #92c5aa;
+  --green-400: #52a97c;
+  --green-500: #16a34a;
+  --green-600: #12813c;
+  --green-700: #0f5132;
+  --green-800: #0c3f28;
+  --green-900: #08291a;
+  --green-950: #041610;
+
+  /* Neutrals carry a slight green cast so they sit with the ramp above
+     rather than looking like a separate grey system pasted on. */
+  --neutral-0: #ffffff;
+  --neutral-50: #f7faf8;
+  --neutral-100: #eef2f0;
+  --neutral-200: #e2eae5;
+  --neutral-300: #c8d5ce;
+  --neutral-400: #9aaba2;
+  --neutral-500: #6f8177;
+  --neutral-600: #5a6b63;
+  --neutral-700: #3d4a44;
+  --neutral-800: #1e2a24;
+  --neutral-900: #101815;
+  --neutral-950: #0a0f0d;
+  --neutral-ink: #0c1512;
+
+  /* Status hues. Amber and red are desaturated slightly so they belong
+     next to the green rather than shouting over it. */
+  --amber-100: #fdf2e0;
+  --amber-500: #d97f0d;
+  --amber-600: #b45309;
+  --amber-300: #f0b264;
+  --red-100: #fdeaea;
+  --red-500: #dc2626;
+  --red-600: #b91c1c;
+  --red-300: #f08a8a;
+
+  /* Type. Plex Serif for display, Plex Sans for UI, Plex Mono for figures —
+     money columns must align, which is a functional requirement, not a flourish. */
+  --font-display: "IBM Plex Serif", ui-serif, Georgia, serif;
+  --font-body: "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.14em;
+
+  /* Space: 4px base, skipping sizes nobody reaches for. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-full: 999px;
+
+  --border-hairline: 1px;
+
+  /* Motion. Components reference these so the reduced-motion override in
+     global.css can collapse every animation from one place. */
+  --duration-instant: 90ms;
+  --duration-fast: 160ms;
+  --duration-base: 240ms;
+  --duration-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --shell-nav-width: 232px;
+  --content-max: 1180px;
+}

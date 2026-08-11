@@ -1,0 +1,215 @@
+.shell {
+  display: grid;
+  grid-template-columns: var(--shell-nav-width) 1fr;
+  min-height: 100dvh;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  background: var(--surface-sunken);
+  border-right: var(--border-hairline) solid var(--line);
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-2);
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent-strong);
+  color: var(--accent-contrast);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.brandMeta {
+  font-size: var(--text-2xs);
+  color: var(--text-subtle);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.navLabel {
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.navLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.navLink:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.navLink svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.navLinkActive {
+  color: var(--text-accent);
+  font-weight: 500;
+  background: var(--accent-soft);
+}
+
+.navLinkActive svg {
+  opacity: 1;
+}
+
+/* The active marker is a vertical rule in the gutter, echoing the ruled-ledger
+   language the dashboard uses rather than a filled pill. */
+.navLinkActive::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--space-4) * -1);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  background: var(--accent);
+}
+
+.navFooter {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max);
+  padding: var(--space-6) var(--space-6) var(--space-8);
+  margin-inline: auto;
+}
+
+/* Keyed on the pathname, so each route enters with a short rise. Enough to
+   signal "this is a new page" without making navigation feel slow. */
+.routeEnter {
+  animation: routeIn var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes routeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .nav {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: var(--border-hairline) solid var(--line);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .navGroup {
+    flex-direction: row;
+    gap: var(--space-1);
+  }
+
+  .navLabel,
+  .brandText {
+    display: none;
+  }
+
+  .navLink span {
+    display: none;
+  }
+
+  .navLink {
+    padding: var(--space-2);
+  }
+
+  .navLinkActive::before {
+    left: 50%;
+    top: auto;
+    bottom: -6px;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 2px;
+    border-radius: var(--radius-full);
+  }
+
+  .navFooter {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  .content {
+    padding: var(--space-5) var(--space-4) var(--space-7);
+  }
+}

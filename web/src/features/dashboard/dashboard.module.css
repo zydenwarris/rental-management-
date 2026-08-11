@@ -1,0 +1,383 @@
+.grid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* ---------- Collection headline ---------- */
+
+.collection {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: center;
+  padding: var(--space-6);
+}
+
+.collectedAmount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-3xl);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text);
+}
+
+.collectedOf {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.collectedOf b {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* The bar is the month's rent: filled portion collected, remainder owed. */
+.progressTrack {
+  position: relative;
+  height: 8px;
+  margin-top: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--neutral-fill);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  transform-origin: left center;
+  animation: fill var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.progressLegend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.figures {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.figureRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-hairline) solid var(--line);
+}
+
+.figureRow:last-child {
+  border-bottom: none;
+}
+
+.figureLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.figureValue {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.figureNegative {
+  color: var(--danger);
+}
+
+.figurePositive {
+  color: var(--positive);
+}
+
+/* ---------- Occupancy: one segment per real unit ---------- */
+
+.occupancy {
+  padding: var(--space-5);
+}
+
+.segments {
+  display: flex;
+  gap: 3px;
+  margin-bottom: var(--space-3);
+}
+
+.segment {
+  flex: 1;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: var(--border-hairline) solid transparent;
+  animation: riseIn var(--duration-base) var(--ease-out) both;
+}
+
+.segmentOccupied {
+  background: var(--accent-strong);
+}
+
+.segmentVacant {
+  background: transparent;
+  border-color: var(--line-strong);
+  border-style: dashed;
+}
+
+/* Hatching rather than a flat fill: "being worked on" reads as a distinct
+   texture at a glance, and it survives greyscale. */
+.segmentMaintenance {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--warning) 0,
+    var(--warning) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+  border-color: var(--warning);
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.occupancyLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: var(--border-hairline) solid transparent;
+}
+
+/* ---------- The rent book ---------- */
+
+.ledgerScroll {
+  overflow-x: auto;
+}
+
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.ledger th {
+  padding: var(--space-3) var(--space-3);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  border-bottom: var(--border-hairline) solid var(--line-strong);
+  white-space: nowrap;
+}
+
+.ledgerMonthHead {
+  text-align: center;
+  width: 58px;
+  font-family: var(--font-mono);
+}
+
+.ledgerNameHead {
+  text-align: left;
+}
+
+.ledgerRow {
+  animation: ledgerIn var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes ledgerIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+.ledger td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-hairline) solid var(--line);
+}
+
+.ledger tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ledgerTenant {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ledgerUnit {
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  white-space: nowrap;
+}
+
+.ledgerCellWrap {
+  text-align: center;
+}
+
+/* Each cell is a month. State is carried by fill AND shape, so the grid stays
+   readable in greyscale and for colour-blind readers. */
+.cell {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  border: var(--border-hairline) solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.cell:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+
+.cellPaid {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--accent-contrast);
+}
+
+.cellPartial {
+  /* Half-filled: the shortfall is visible as shape, not just hue. */
+  background: linear-gradient(to top, var(--warning) 50%, transparent 50%);
+  border-color: var(--warning);
+  color: var(--text);
+}
+
+.cellLate {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.cellNone {
+  background: transparent;
+  border-style: dashed;
+  color: var(--text-subtle);
+}
+
+.cellOutsideTerm {
+  border: none;
+  background: none;
+  color: var(--line);
+}
+
+.ledgerLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-top: var(--border-hairline) solid var(--line);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ---------- Attention list ---------- */
+
+.attention {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+}
+
+.attentionItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.attentionItem:hover {
+  background: var(--surface-hover);
+}
+
+.attentionIcon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+}
+
+.attentionIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.attentionUrgent {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.attentionSoon {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.attentionText {
+  flex: 1;
+  min-width: 0;
+}
+
+.attentionMeta {
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.twoUp {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-5);
+}
+
+@media (max-width: 760px) {
+  .collection {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  .collectedAmount {
+    font-size: var(--text-2xl);
+  }
+}
