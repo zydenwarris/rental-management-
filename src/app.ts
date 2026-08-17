@@ -1,5 +1,5 @@
 import express, { type Express } from "express";
-import { attachContext, errorHandler, notFoundHandler } from "./shared/middleware.js";
+import { errorHandler, notFoundHandler, requireAuth } from "./shared/middleware.js";
 import { propertyRoutes } from "./modules/properties/property.routes.js";
 import { propertyUnitRoutes, unitRoutes } from "./modules/units/unit.routes.js";
 import { tenantRoutes } from "./modules/tenants/tenant.routes.js";
@@ -26,13 +26,15 @@ export function buildApp(container: Container): Express {
   const { controllers } = container;
 
   app.use(express.json());
-  // Every route below this line has req.ctx. Real authentication replaces this
-  // single middleware; nothing downstream changes.
-  app.use(attachContext);
 
+  // Above the auth middleware on purpose: a health check that needs credentials is
+  // useless to a load balancer or an uptime monitor.
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
   });
+
+  // Every route below this line has req.ctx, filled in from the caller's access token.
+  app.use(requireAuth);
 
   app.use("/api/dashboard", dashboardRoutes(controllers.dashboard));
 

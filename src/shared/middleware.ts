@@ -1,15 +1,19 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { ZodError, type ZodType } from "zod";
+import { env, hasDatabase } from "../config/env.js";
+import { ensureLandlord } from "./auth/landlords.js";
+import { verifyAccessToken } from "./auth/verifyToken.js";
 import { ApiError, ErrorCode, isApiError, type ErrorDetail } from "./errors.js";
 import type { ErrorResponse } from "./http.js";
 import type { RequestContext } from "./types.js";
 
 /**
- * The single development landlord. When authentication lands, attachContext is
- * the one middleware that changes (deriving landlordId from the session/token);
- * every service already reads the context, so nothing else moves.
+ * The single development landlord, used only while AUTH_REQUIRED is false so the portal
+ * keeps working before it sends real tokens. Removed once the frontend authenticates.
  */
 export const DEV_LANDLORD_ID = "lord_dev_000000000000";
+
+const BEARER_PREFIX = "Bearer ";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -20,9 +24,37 @@ declare global {
   }
 }
 
-export function attachContext(req: Request, _res: Response, next: NextFunction): void {
-  req.ctx = { landlordId: DEV_LANDLORD_ID };
-  next();
+/**
+ * Establishes who is acting, for every route below it.
+ *
+ * This is the one place identity enters the system. Every service already scopes reads
+ * and writes to ctx.landlordId, so authorisation across the whole API follows from this
+ * single assignment being correct.
+ */
+export const requireAuth: RequestHandler = (req, _res, next) => {
+  // Express 4 does not catch rejections from async middleware; without this the request
+  // would hang instead of answering 401.
+  authenticate(req).then(() => next(), next);
+};
+
+async function authenticate(req: Request): Promise<void> {
+  const header = req.get("authorization") ?? "";
+  const token = header.startsWith(BEARER_PREFIX)
+    ? header.slice(BEARER_PREFIX.length).trim()
+    : "";
+
+  if (token === "") {
+    if (env.AUTH_REQUIRED) {
+      throw ApiError.unauthorized("This endpoint requires a signed-in user.");
+    }
+    req.ctx = { landlordId: DEV_LANDLORD_ID };
+    return;
+  }
+
+  const user = await verifyAccessToken(token);
+  // Nothing to attach the landlord to when running on the in-memory repositories.
+  if (hasDatabase) await ensureLandlord(user);
+  req.ctx = { landlordId: user.id };
 }
 
 /**

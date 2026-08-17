@@ -98,6 +98,11 @@ export class ApiError extends Error {
   static conflict(message: string, details: readonly ErrorDetail[] = []): ApiError {
     return new ApiError(ErrorCode.CONFLICT, 409, message, details);
   }
+
+  /** No usable credentials. 401, not 403: the caller may retry with a valid token. */
+  static unauthorized(message: string): ApiError {
+    return new ApiError(ErrorCode.UNAUTHORIZED, 401, message);
+  }
 }
 
 export function isApiError(error: unknown): error is ApiError {
