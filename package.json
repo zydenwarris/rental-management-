@@ -18,7 +18,10 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
+    "dotenv": "^17.4.2",
     "express": "^4.21.2",
+    "jose": "^6.2.9",
+    "postgres": "^3.4.9",
     "zod": "^3.24.1"
   },
   "devDependencies": {
