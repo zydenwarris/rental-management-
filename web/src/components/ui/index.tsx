@@ -111,6 +111,7 @@ export function Field({
   hint,
   required,
   wide,
+  action,
   children,
 }: {
   label: string;
@@ -118,14 +119,19 @@ export function Field({
   hint?: string;
   required?: boolean;
   wide?: boolean;
+  /** Secondary control rendered on the label line, e.g. a "Forgot password?" link. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <div className={cx(styles.field, wide && styles.fieldWide)}>
-      <label className={styles.label}>
-        {label}
-        {required && <span className={styles.required}>*</span>}
-      </label>
+      <div className={action ? styles.labelRow : undefined}>
+        <label className={styles.label}>
+          {label}
+          {required && <span className={styles.required}>*</span>}
+        </label>
+        {action}
+      </div>
       {children}
       {hint && !error && <p className={styles.hint}>{hint}</p>}
       {error && (

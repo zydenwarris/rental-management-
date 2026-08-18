@@ -14,6 +14,7 @@
     "@fontsource-variable/ibm-plex-sans": "^5.1.1",
     "@fontsource/ibm-plex-mono": "^5.1.1",
     "@fontsource/ibm-plex-serif": "^5.1.1",
+    "@supabase/supabase-js": "^2.109.0",
     "@tanstack/react-query": "^5.62.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

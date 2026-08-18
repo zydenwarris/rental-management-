@@ -14,7 +14,20 @@
   position: sticky;
   top: 0;
   height: 100dvh;
+  overflow: hidden;
+}
+
+/* Only the link groups scroll. Scrolling the whole column instead would push
+   "Sign out" past the bottom edge on a short window, which is where it was before
+   this wrapper existed. min-height: 0 is what lets a flex child shrink enough to
+   scroll at all. */
+.navScroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
 }
 
 .brand {
@@ -126,10 +139,65 @@
 }
 
 .navFooter {
-  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+/* Separated by a rule rather than a card: who you are signed in as is a footnote to
+   the navigation, not a competing block. */
+.account {
+  padding-top: var(--space-3);
+  border-top: var(--border-hairline) solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.accountName {
+  margin: 0;
+  padding-inline: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signOut {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.signOut svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.signOut:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.signOut:hover svg {
+  opacity: 1;
 }
 
 .main {
@@ -176,9 +244,33 @@
     padding: var(--space-3) var(--space-4);
   }
 
+  .navScroll {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
   .navGroup {
     flex-direction: row;
     gap: var(--space-1);
+  }
+
+  /* The bar is a row now, so the account collapses to the sign-out control alone. */
+  .account {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .accountName {
+    display: none;
+  }
+
+  .signOut span {
+    display: none;
   }
 
   .navLabel,

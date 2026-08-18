@@ -1,0 +1,318 @@
+/**
+ * The signed-out shell.
+ *
+ * Same vocabulary as the signed-in app — hairlines, a sunken wash, the serif for
+ * display type — so signing in is a continuation rather than a change of product.
+ * The card is the only raised surface in the interface, which is the point: it is
+ * the one thing being asked of the user.
+ */
+
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: var(--surface-sunken);
+  padding: var(--space-4);
+}
+
+.topBar {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 1180px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.themeToggle:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+/* Icons are drawn on a 16px grid and carry no intrinsic size, so every use site
+   states one. */
+.themeToggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.centre {
+  display: grid;
+  place-items: center;
+  padding: var(--space-5) 0;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  animation: cardIn var(--duration-base) var(--ease-out) both;
+}
+
+/* Keyed on the route, so moving between sign in, sign up and reset replays this
+   rather than swapping content inside a static frame. */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+}
+
+/* ---------- Brand ---------- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--accent-strong);
+  color: var(--accent-contrast);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.brandName {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: var(--leading-tight);
+}
+
+.brandMeta {
+  display: block;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+/* ---------- Heading ---------- */
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--text);
+  margin: 0;
+}
+
+.subtitle {
+  margin: var(--space-2) 0 var(--space-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+/* ---------- Form ---------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Fields arrive in reading order. Small offsets and short delays — enough to feel
+   composed, not so much that a returning user waits for their password box. */
+.stagger > * {
+  animation: fieldIn var(--duration-base) var(--ease-out) both;
+}
+
+.stagger > *:nth-child(1) { animation-delay: 40ms; }
+.stagger > *:nth-child(2) { animation-delay: 80ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 160ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+
+@keyframes fieldIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.submit {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ---------- Password field ---------- */
+
+.passwordWrap {
+  position: relative;
+  display: flex;
+}
+
+.passwordWrap input {
+  padding-right: 68px;
+}
+
+.reveal {
+  position: absolute;
+  right: var(--space-1);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--text-subtle);
+  font: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.reveal:hover {
+  color: var(--text-accent);
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* ---------- Footer ---------- */
+
+.footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: var(--border-hairline) solid var(--line);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.link {
+  color: var(--text-accent);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.link:hover {
+  border-bottom-color: currentcolor;
+}
+
+.pageFooter {
+  padding: var(--space-4);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+/* ---------- Sent / confirmation state ---------- */
+
+.sent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  animation: fieldIn var(--duration-base) var(--ease-out) both;
+}
+
+.sentMark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--positive-soft);
+  color: var(--positive);
+  /* Draws attention once on arrival, then stops. */
+  animation: markIn var(--duration-slow) var(--ease-out) both;
+}
+
+.sentMark svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.6;
+}
+
+@keyframes markIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.sentAddress {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text);
+  word-break: break-all;
+}
+
+.sentNote {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+/* ---------- Full-page session check ---------- */
+
+.booting {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: var(--surface-sunken);
+}
+
+/* Held back so a session that restores instantly — the common case — shows nothing
+   at all rather than a spinner flicker. */
+.bootingMark {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--accent-strong);
+  opacity: 0;
+  animation: bootPulse 1.6s var(--ease-in-out) 400ms infinite;
+}
+
+@keyframes bootPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

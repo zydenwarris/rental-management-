@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation } from "react-router";
+import { useAuth } from "@app/features/auth/AuthProvider.js";
 import { useTheme, Theme } from "@app/hooks/useTheme.js";
 import styles from "./AppShell.module.css";
 import {
@@ -9,6 +10,7 @@ import {
   MoonIcon,
   PaymentIcon,
   PropertyIcon,
+  SignOutIcon,
   SunIcon,
   TenantIcon,
   UnitIcon,
@@ -50,6 +52,7 @@ const NAV_GROUPS = [
 export function AppShell() {
   const { theme, toggleTheme } = useTheme();
   const { pathname } = useLocation();
+  const { displayName, email, signOut } = useAuth();
 
   return (
     <div className={styles.shell}>
@@ -64,23 +67,25 @@ export function AppShell() {
           </span>
         </div>
 
-        {NAV_GROUPS.map((group, index) => (
-          <div key={group.label ?? `group-${index}`} className={styles.navGroup}>
-            {group.label && <p className={styles.navLabel}>{group.label}</p>}
-            {group.items.map(({ to, label, Icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink
-                }
-              >
-                <Icon />
-                <span>{label}</span>
-              </NavLink>
-            ))}
-          </div>
-        ))}
+        <div className={styles.navScroll}>
+          {NAV_GROUPS.map((group, index) => (
+            <div key={group.label ?? `group-${index}`} className={styles.navGroup}>
+              {group.label && <p className={styles.navLabel}>{group.label}</p>}
+              {group.items.map(({ to, label, Icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  className={({ isActive }) =>
+                    isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink
+                  }
+                >
+                  <Icon />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </div>
+          ))}
+        </div>
 
         <div className={styles.navFooter}>
           <button
@@ -92,6 +97,18 @@ export function AppShell() {
             {theme === Theme.Dark ? <SunIcon /> : <MoonIcon />}
             <span>{theme === Theme.Dark ? "Light mode" : "Dark mode"}</span>
           </button>
+
+          <div className={styles.account}>
+            {/* title carries the full address: a long one is truncated in the gutter,
+                and knowing which account you are in matters most when it is ambiguous. */}
+            <p className={styles.accountName} title={email}>
+              {displayName}
+            </p>
+            <button type="button" className={styles.signOut} onClick={() => void signOut()}>
+              <SignOutIcon />
+              <span>Sign out</span>
+            </button>
+          </div>
         </div>
       </nav>
 

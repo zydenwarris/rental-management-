@@ -303,6 +303,15 @@
   color: var(--text-muted);
 }
 
+/* Label plus a secondary action on the same line — "Forgot password?" beside the
+   password label, where people look for it. */
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .required {
   color: var(--danger);
   margin-left: 2px;
