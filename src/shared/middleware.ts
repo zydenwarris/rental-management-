@@ -1,17 +1,11 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { ZodError, type ZodType } from "zod";
-import { env, hasDatabase } from "../config/env.js";
+import { hasDatabase } from "../config/env.js";
 import { ensureLandlord } from "./auth/landlords.js";
 import { verifyAccessToken } from "./auth/verifyToken.js";
 import { ApiError, ErrorCode, isApiError, type ErrorDetail } from "./errors.js";
 import type { ErrorResponse } from "./http.js";
 import type { RequestContext } from "./types.js";
-
-/**
- * The single development landlord, used only while AUTH_REQUIRED is false so the portal
- * keeps working before it sends real tokens. Removed once the frontend authenticates.
- */
-export const DEV_LANDLORD_ID = "lord_dev_000000000000";
 
 const BEARER_PREFIX = "Bearer ";
 
@@ -44,11 +38,7 @@ async function authenticate(req: Request): Promise<void> {
     : "";
 
   if (token === "") {
-    if (env.AUTH_REQUIRED) {
-      throw ApiError.unauthorized("This endpoint requires a signed-in user.");
-    }
-    req.ctx = { landlordId: DEV_LANDLORD_ID };
-    return;
+    throw ApiError.unauthorized("This endpoint requires a signed-in user.");
   }
 
   const user = await verifyAccessToken(token);

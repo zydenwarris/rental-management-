@@ -10,26 +10,31 @@ import { DEFAULT_PORT } from "./constants.js";
  * downstream reads a typed, frozen object and never touches process.env again.
  */
 
+/**
+ * `FOO=` in a .env file arrives as an empty string, which every other rule here would
+ * then reject as malformed. A variable left blank means the same thing as one left out.
+ */
+function optional<T extends z.ZodTypeAny>(schema: T) {
+  return z.preprocess((value) => (value === "" ? undefined : value), schema.optional());
+}
+
 const envSchema = z.object({
   /**
    * Supabase transaction pooler (port 6543), NOT the direct connection on 5432.
    * Unset means "run entirely on the in-memory repositories", which is what keeps
    * every step of the database migration shippable on its own.
    */
-  DATABASE_URL: z.string().url().optional(),
+  DATABASE_URL: optional(z.string().url()),
 
   /** Project URL. Used to build the JWKS endpoint and as the expected `iss` claim. */
   SUPABASE_URL: z.string().url(),
 
   /**
-   * Temporary scaffold: false lets requests without an Authorization header fall back
-   * to the development landlord, so the API stays usable while the frontend is being
-   * wired up. Removed once the portal sends real tokens.
+   * Landlord id the development seed attaches its demo portfolio to. Unset means no
+   * seeding: the portfolio now belongs to a real authenticated user, so there is no
+   * sensible default to invent.
    */
-  AUTH_REQUIRED: z
-    .enum(["true", "false"])
-    .default("false")
-    .transform((value) => value === "true"),
+  SEED_LANDLORD_ID: optional(z.string().uuid()),
 
   PORT: z.coerce.number().int().positive().default(DEFAULT_PORT),
 });

@@ -1,12 +1,13 @@
 # Rental Management API
 
-Landlord-focused rental management backend. No database, no authentication, no payment
-processing. The landlord portal that consumes this API lives in [`web/`](web/README.md)
-and runs as its own server — see [Quick start](#quick-start).
+Landlord-focused rental management backend. Authentication and identity come from
+Supabase; no payment processing. The landlord portal that consumes this API lives in
+[`web/`](web/README.md) and runs as its own server — see [Quick start](#quick-start).
 
-All data flows through typed service and repository interfaces backed by in-memory mocks,
-so the API runs standalone today and a real database can replace the mocks later without
-touching business logic or controllers.
+All data flows through typed service and repository interfaces. The repositories are
+still in-memory mocks, so **portfolio data does not survive an API restart yet**;
+identity and the `landlords` table are already in Postgres. Swapping the mocks for
+PostgreSQL repositories is the next piece of work and touches no business logic.
 
 ## Quick start
 
@@ -16,8 +17,16 @@ starts both:
 ```bash
 npm install
 npm install --prefix web
+
+cp .env.example .env             # then fill in DATABASE_URL and SUPABASE_URL
+cp web/.env.example web/.env     # then fill in the two VITE_ values
+
 npm run dev:all      # API on :4000, portal on :5173
 ```
+
+Both `.env` files are required: the API refuses to start without `SUPABASE_URL`, and the
+portal throws on load without its Supabase values. That is deliberate — the alternative
+is a login screen that fails with an opaque network error.
 
 Then open **http://localhost:5173**.
 
@@ -101,12 +110,32 @@ implementation pushes scoping into the `WHERE` clause and drops straight in.
 
 No service, controller, route, or test changes.
 
-### Adding authentication later
+### Authentication
 
-`attachContext` in `src/shared/middleware.ts` currently assigns a fixed development
-landlord to `req.ctx`. Every service already scopes reads and writes to `ctx.landlordId`,
-so real authentication replaces that one middleware and landlord-level authorization
-works everywhere at once.
+The browser talks to Supabase for authentication only — never for data. Every property,
+lease and payment still goes through this API, which is where the business rules live.
+
+1. The portal signs in with `@supabase/supabase-js` and holds the session.
+2. It sends the access token as `Authorization: Bearer <token>` on every request.
+3. `requireAuth` in `src/shared/middleware.ts` verifies the token against the project's
+   **public JWKS** (ES256) and sets `req.ctx.landlordId` to the `sub` claim.
+4. On a user's first request, `ensureLandlord` upserts their `landlords` row.
+
+Verification is local, so there is no round-trip to Supabase per request and **no
+service_role key anywhere in this codebase**. `GET /health` is the only unauthenticated
+route; everything under `/api` answers `401 UNAUTHORIZED` without a valid token.
+
+Every service already scoped reads and writes to `ctx.landlordId`, so landlord-level
+authorization came for free the moment that one middleware started telling the truth.
+
+### Row level security
+
+The API connects as `postgres`, which **owns** these tables — and a table owner bypasses
+RLS. `withLandlordScope` in `src/shared/db/scope.ts` therefore opens every transaction as
+the `authenticated` role with the caller's JWT claims, so the policies in the migration
+actually run. Isolation then holds twice: in the repository's `WHERE` clause and in the
+database itself. `src/shared/db/scope.test.ts` guards that the role switch still happens
+and does not leak onto the next request sharing a pooled connection.
 
 ## Conventions
 
@@ -153,6 +182,7 @@ Error — always this shape, on every failure:
 
 | Code | Status | Meaning |
 |---|---|---|
+| `UNAUTHORIZED` | 401 | Missing, malformed, or expired access token |
 | `VALIDATION_ERROR` | 422 | Request body failed schema validation |
 | `NOT_FOUND` | 404 | Resource does not exist, or belongs to another landlord |
 | `DUPLICATE_UNIT` | 409 | Unit label already used within that property |
@@ -442,6 +472,14 @@ Business logic is tested at the service layer, where the rules live.
 
 ## Deliberately out of scope
 
-Authentication, tenant accounts and portal, online rent payment processing, document
-uploads, notifications, and reporting exports. The seams for authentication and a real
-database are built; the rest is future work.
+Tenant accounts and portal, online rent payment processing, document uploads,
+notifications, and reporting exports.
+
+## Known gaps
+
+- **Portfolio data is still in memory.** Only identity and `landlords` live in Postgres.
+  Restarting the API empties the portfolio. Postgres repositories are next.
+- **Email confirmation is off** in the Supabase project so signup returns a session
+  immediately. Before real users, turn it back on and configure a custom SMTP provider —
+  the built-in sender is rate-limited and on new projects often delivers only to the
+  account owner. Password reset needs working email, so it is affected too.

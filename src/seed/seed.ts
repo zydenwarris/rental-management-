@@ -1,4 +1,3 @@
-import { DEV_LANDLORD_ID } from "../shared/middleware.js";
 import { today } from "../shared/dates.js";
 import { PropertyType } from "../modules/properties/property.types.js";
 import { UnitStatus } from "../modules/units/unit.types.js";
@@ -19,9 +18,16 @@ import type { RequestContext } from "../shared/types.js";
  *
  * Dates are computed relative to today so the portfolio never goes stale:
  * there is always a lease expiring soon and a current month with payments.
+ *
+ * The landlord is passed in rather than assumed. Every row is scoped to whoever owns
+ * it, and since authentication landed that owner is a real user id — seeding to an
+ * invented one would produce a portfolio nobody can see.
  */
-export async function seedDevelopmentData(container: Container): Promise<void> {
-  const ctx: RequestContext = { landlordId: DEV_LANDLORD_ID };
+export async function seedDevelopmentData(
+  container: Container,
+  landlordId: string,
+): Promise<void> {
+  const ctx: RequestContext = { landlordId };
   const { properties, units, tenants, leases, payments, expenses, maintenance } =
     container.services;
 
